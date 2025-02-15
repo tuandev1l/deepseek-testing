@@ -1,0 +1,74 @@
+# Technology:
+- Frontend:
+  - ReactJS
+  - Typescript
+  - TailwindCSS
+  - Using Vite
+- Backend:
+  - NodeJS using framework ExpressJS
+  - Javascript
+Both client-side and server-side are using websocket to communicate with each other and yarn to manage dependencies.
+
+# Rule:
+- The game is played on a 16x16 grid.
+- 5 consecutive same color pieces in a row, column, or diagonal wins the game. But in this case, the game is not over:
+  - 5 consecutive same color pieces in a row, column, or diagonal but is being blocked in both sides like OXXXXXO or OXXXXX_O is not a win with _ is the empty cell and vice versa.
+- Checking winner is done by client.
+
+# Schema: We do not using DB here, just using vanilla javascript data structures.
+## User:
+- id: string (unique, using uuid)
+- name: string
+
+## Room:
+- id: string (unique, using uuid)
+- name: string
+- users: User[]
+
+# User stories:
+1. When user go to the website, he can enter the name and click to "play" button.
+2. As a user, I can play caro game with my friend in real time.
+3. As a user, I can choose room to play caro game.
+
+# Steps to do:
+## Basic:
+1. Board game 16x16 grid so that two players can play it.
+2. First players go with X and second players go with O.
+3. All the moves have to displayed on the board.
+4. When a player wins, the game is over and notification is displayed. Keep it simple, consecutive same color pieces in a row, column, or diagonal wins the game.
+5. A button to start a new game is displayed. If new game is started, symbol of players changes from X to O and vice versa.
+
+## intermediate:
+1. When players go to the game, they can choose the room to play it.
+2. The rooms have "table icon" and name of the room is the name of the first player goes to the room.
+3. When a player joins a room, 10 seconds is counter down so that the players can play caro together.
+4. Only two players in the rooms
+5. When two players leave a room, the room is deleted.
+6. Check that is the turn of this player or not, if not, display a message that this player is not the turn to play.
+
+## Advanced:
+1. Display consecutive symbols in a row, column, or diagonal that makes winner wins the game.
+2. Apply the rules: 5 consecutive same color pieces in a row, column, or diagonal wins the game. But in this case, the game is not over: 5 consecutive same color pieces in a row, column, or diagonal but is being blocked in both sides like OXXXXXO or OXXXXX_O is not a win with _ is the empty cell and vice versa.
+3. If player disconnect in a game, find solutions so that if player reconnect, this player can continue playing
+
+# More details (update 1):
+1. Using Typescript for frontend only, in backend just using vanilla javascript.
+2. Block here that means if you playing X, O is considered to block you to win, so OXXXXXO, OXXXXX_O, XOOOOOX or XOOOOO_X are not considered to win because they are blocked in two ways. (advanced)
+3. If 5 consecutives are blocked in one way, ONLY one way, that is win
+4. fixed size of the board, that is 16x16
+5. No, that is the rule, default, first player goes to the room will use X and remainer will go with O. After a game, if continue to a new match, symbol will be reversed, first player goes to the room will play O and remainer will go with X. And continue to next new match.
+6. I think we should check in client-side, after server emit events that a player moves. Check winner after displaying symbol to the board.
+7. We can use uuid for id of the room, but the name of the room is still the name of the first player goes to the room.
+8. If one player leaves a room, the room is still remain. Name of the room is the name of the first player goes to the room and if he leaves, the name of the room is named to the second player goes to the room.
+9. Nothing triggered the countdown, when a room has two players, the countdown is started.
+10. Yeah, find a solution to check winner, especially in client-side because server handle so many works of socket so i think it is better to do it in client-side. If you have solution in server-side, ask me again and we'll discuss about this.
+11. Next new match will have button so that two players can play the game, BUT if this is the first game, only counter countdown will be displayed. Next new match game will also countdown but we can go to the next match if two players click to the "ready" button
+12. Client and server have to seperated into individual folders. Give me the project structure before starting to code.
+
+# More details (update 2):
+1. Just implement tech stack. Frontend is using Typescript, backend is using plain javascript only. That is requirement.
+2. Yeah, we HAVE TO use the socket.io in both client-side and server-side. If the rooms have two players, and other players still want to go that room, display the message that "this room is full".
+3. Countdown has to implement in client-side. If one player leaves when the countdown is started, the countdown is stopped and the game has not started yet.
+4. No authentication here, players just enter their name and click to "play" button. If two players have the same name, they will be treated as the different players because with each player, they are going to have a different id using uuid.
+5. We do not need function about reconnecting handling yet, keep it as advanced function and when i need it, i will tell you.
+6. Monorepo with seperate client and server folder is requirement.
